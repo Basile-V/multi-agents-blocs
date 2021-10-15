@@ -10,6 +10,6 @@ public class main {
         for(Agent agent : agents){
             agent.setEnvironnement(environnement);
         }
-        environnement.run();
+        environnement.start();
     }
 }

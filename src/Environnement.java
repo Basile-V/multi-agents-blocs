@@ -2,16 +2,17 @@ import java.util.ArrayList;
 import java.util.Random;
 import java.util.Stack;
 
-public class Environnement extends Thread{
+public class Environnement{
 
     private ArrayList<Stack<Agent>> map;
+    Random ran = new Random();
     private Agent[] agents;
-    private boolean fini;
+    private boolean success;
     private int nbMoves;
     private int maxMoves;
 
     public Environnement(int tailleMap, Agent[] agents, int maxMoves){
-        this.fini = false;
+        this.success = false;
         this.map = new ArrayList<>();
         for(int i=0; i < tailleMap; i++){
             this.map.add(new Stack());
@@ -36,25 +37,28 @@ public class Environnement extends Thread{
         return false;
     }
 
-    public void deplacer(Agent a){
-        int i = 0;
-        while(i < this.map.size()){
-            if(this.map.get(i).peek() == a){
-                Random ran = new Random();
-                int x = ran.nextInt(this.map.size());
-                while(x == i){
-                    x = ran.nextInt(this.map.size());
+    public synchronized void deplacer(Agent a){
+        for(Stack<Agent> oldStack: this.map){
+            if(oldStack.size() > 0 && oldStack.peek() == a){
+                int rand = ran.nextInt(this.map.size()-1);
+                ArrayList<Stack<Agent>> possibleMoves = (ArrayList<Stack<Agent>>) this.map.clone();
+                possibleMoves.remove(oldStack);
+                Stack<Agent> newStack = possibleMoves.get(rand);
+                if(newStack.size() != 0) {
+                    Agent voisinDessous = newStack.peek();
+                    newStack.push(oldStack.pop());
+                    a.setVoisinDessous(voisinDessous);
+                    voisinDessous.setVoisinDessus(a);
+                }else{
+                    newStack.push(oldStack.pop());
+                    a.setVoisinDessous(null);
                 }
-                Agent voisinDessous = this.map.get(x).peek();
-                this.map.get(x).push(this.map.get(i).pop());
-                a.setVoisinDessous(voisinDessous);
-                this.map.get(i).peek().setVoisinDessous(null);
+                if(oldStack.size() > 0 ) oldStack.peek().setVoisinDessus(null);
+                a.setPushed(false);
                 this.nbMoves++;
-                this.map.get(x).peek().setPushed(false);
                 if(reussite() || this.nbMoves >= maxMoves) terminerLeProgramme();
-                return;
+                break;
             }
-            i++;
         }
         print();
     }
@@ -63,51 +67,34 @@ public class Environnement extends Thread{
         for(Agent a: agents){
             if(!a.objectifAtteint()) return false;
         }
-        this.fini = true;
+        this.success = true;
         return true;
     }
 
     public void terminerLeProgramme(){
-        System.out.println("Réussite :" + this.fini +" nombre de déplacements :"+this.nbMoves);
+        System.out.println("Réussite : " + this.success +" | Nombre de déplacements : "+this.nbMoves);
         for (Agent a : agents){
-            a.interrupt();
+            a.setFini(true);
         }
-        this.interrupt();
         //Kill threads
     }
 
-    @Override
-    public void run(){
+    public void start(){
         for (Agent a : this.agents){
-            a.run();
-        }
-        while(!this.fini){
-            try {
-                Thread.sleep(100);
-            } catch (InterruptedException ex){
-                ex.printStackTrace();
-            }
+            a.start();
         }
     }
 
     public void print(){
-        ArrayList<ArrayList<Agent>> map = new ArrayList<ArrayList<Agent>>();
-        for (int i = 0; i < this.map.size(); i++){
-            map.set(i, new ArrayList(this.map.get(i)));
-        }
-        System.out.println("----------------------");
-        for(int y = this.agents.length - 1; y >= 0; y++){
-            String line = "|";
-            for(int x = 0; x < map.size(); x++){
-                if(map.get(x).size() < y){
-                    line += "x|";
-                }
-                else{
-                    line += map.get(x).get(y).getNumero() + "|";
-                }
+        ArrayList<Stack<Agent>> stacksConsumer = new ArrayList<>();
+        for(Stack<Agent> stack : this.map) stacksConsumer.add((Stack<Agent>) stack.clone());
+        for(int i = agents.length; i>0 ; i--){
+            String line = "";
+            for(Stack<Agent> stack: stacksConsumer){
+                if(stack.size() == i) line += "|"+stack.pop()+"| ";
+                else line += "    ";
             }
             System.out.println(line);
         }
-        System.out.println();
     }
 }

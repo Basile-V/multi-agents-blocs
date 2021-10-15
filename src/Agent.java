@@ -7,20 +7,22 @@ public class Agent extends Thread{
     private Agent objectif;
     private boolean isPushed;
     private Environnement environnement;
+    private boolean fini = false;
 
     public Agent(String numero, Agent objectif, Environnement environnement) {
         this.numero = numero;
-        this.voisinDessus = voisinDessus;
-        this.voisinDessous = voisinDessous;
         this.objectif = objectif;
         this.environnement = environnement;
     }
 
     @Override
     public void run(){
-        while(true){
+        System.out.println("Agent "+ this.numero + "start running");
+        while(!fini){
             try {
-                action();
+                if(!objectifAtteint() || this.isPushed) {
+                    action();
+                }
                 Thread.sleep(1000);
             } catch (InterruptedException ex){
                 ex.printStackTrace();
@@ -70,12 +72,12 @@ public class Agent extends Thread{
         this.voisinDessous = voisinDessous;
     }
 
-    private void action(){
-        if(!objectifAtteint() || this.isPushed){
-            if(this.getVoisinDessus() != null) {
-                System.out.println("L'agent " + this.numero + " pousse");
-                this.pousse();
-            }else{
+    private synchronized void action(){
+        synchronized (environnement){
+            if (this.voisinDessus != null) {
+                    System.out.println("L'agent " + this.numero + " pousse");
+                    this.pousse();
+            } else {
                 System.out.println("L'agent " + this.numero + " se déplace");
                 this.seDeplacer();
             }
@@ -83,7 +85,7 @@ public class Agent extends Thread{
     }
 
     public boolean objectifAtteint(){
-        return this.objectif == this.getVoisinDessous();
+        return this.objectif == this.voisinDessous;
     }
 
     public void setEnvironnement(Environnement environnement) {
@@ -92,5 +94,14 @@ public class Agent extends Thread{
 
     public void setPushed(boolean pushed) {
         isPushed = pushed;
+    }
+
+    public void setFini(boolean fini) {
+        this.fini = fini;
+    }
+
+    @Override
+    public String toString() {
+        return numero;
     }
 }
