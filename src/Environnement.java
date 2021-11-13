@@ -39,7 +39,7 @@ public class Environnement{
         this.verbose = verbose;
     }
 
-    public int deplacer(Agent a){
+    public synchronized int deplacer(Agent a){
         int deplacement = 0;
         for(Stack<Agent> oldStack: this.map){
             if(oldStack.size() > 0 && oldStack.peek() == a){
@@ -55,7 +55,7 @@ public class Environnement{
         return deplacement;
     }
 
-    public int deplacer(Agent a, int deplacement){
+    public synchronized int deplacer(Agent a, int deplacement){
         for(Stack<Agent> oldStack: this.map){
             if(oldStack.size() > 0 && oldStack.peek() == a){
                 Stack<Agent> newStack = this.map.get(this.map.indexOf(oldStack)+deplacement);
@@ -72,7 +72,7 @@ public class Environnement{
      * @param deplacement
      * @return
      */
-    public int deplacerSansDeplacement(Agent a, int deplacement){
+    public synchronized int deplacerSansDeplacement(Agent a, int deplacement){
         for(Stack<Agent> oldStack: this.map){
             if(oldStack.size() > 0 && oldStack.peek() == a){
                 ArrayList<Stack<Agent>> possibleMoves = (ArrayList<Stack<Agent>>) this.map.clone();
@@ -89,7 +89,7 @@ public class Environnement{
         return deplacement;
     }
 
-    public void handleDeplacement(Agent a, Stack<Agent> newStack, Stack<Agent> oldStack){
+    public synchronized void handleDeplacement(Agent a, Stack<Agent> newStack, Stack<Agent> oldStack){
         if(newStack.size() != 0) {
             Agent voisinDessous = newStack.peek();
             newStack.push(oldStack.pop());
@@ -106,7 +106,7 @@ public class Environnement{
         print();
     }
 
-    public boolean reussite(){
+    public synchronized boolean reussite(){
         for(Agent a: agents){
             if(!a.objectifAtteint()) return false;
         }
@@ -122,16 +122,18 @@ public class Environnement{
     }
 
     public int start(){
-        for (Agent a : this.agents){
-            a.start();
-        }
-        try {
-            while(!this.success) {
-                Thread.sleep(1000);
+        if(reussite()) terminerLeProgramme();
+        else{
+            for (Agent a : this.agents){
+                a.start();
             }
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+            try {
+                while(!this.success) {
+                    Thread.sleep(1000);
+                }
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }}
         return this.nbMoves;
     }
 

@@ -15,7 +15,7 @@ public class Agent extends Thread{
 
     @Override
     public void run(){
-        environnement.print("Agent "+ this.numero + "start running");
+        environnement.print("Agent "+ this.numero + " start running");
         while(!fini){
             try {
                 if(!objectifAtteint() || this.isPushed) {

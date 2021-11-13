@@ -20,7 +20,7 @@ public class AgentCoordonne extends Agent{
             while (meneur == this.voisinDessus) Thread.sleep(5);
             environnement.lock();
             environnement.print("L'agent "+numero+" a suivit");
-            environnement.deplacer(this, meneur.getDernierDeplacement());
+            this.dernierDeplacement = environnement.deplacer(this, meneur.getDernierDeplacement());
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -35,7 +35,7 @@ public class AgentCoordonne extends Agent{
             while (antiMeneur == this.voisinDessus) Thread.sleep(5);
             environnement.lock();
             environnement.print("L'agent "+numero+" n'a pas suivi");
-            environnement.deplacerSansDeplacement(this, antiMeneur.getDernierDeplacement());
+            this.dernierDeplacement = environnement.deplacerSansDeplacement(this, antiMeneur.getDernierDeplacement());
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
