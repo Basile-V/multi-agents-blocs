@@ -8,19 +8,34 @@ public class AgentCoordonne extends Agent{
     @Override
     protected void pousse(){
         if(this.isObjectifDessus()) pousseEtSuit();
-        else super.pousse();
+        else pousseEtNeSuitPas();
     }
 
     private void pousseEtSuit() {
-        /*System.out.println("et suit");*/
+        environnement.print("et suit");
         AgentCoordonne meneur = (AgentCoordonne) this.voisinDessus;
         meneur.seFaisPousser();
         environnement.unlock();
         try {
             while (meneur == this.voisinDessus) Thread.sleep(5);
             environnement.lock();
-            /*System.out.println("L'agent "+numero+" a suivit");*/
+            environnement.print("L'agent "+numero+" a suivit");
             environnement.deplacer(this, meneur.getDernierDeplacement());
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void pousseEtNeSuitPas() {
+        environnement.print("et ne suit pas");
+        AgentCoordonne antiMeneur = (AgentCoordonne) this.voisinDessus;
+        antiMeneur.seFaisPousser();
+        environnement.unlock();
+        try {
+            while (antiMeneur == this.voisinDessus) Thread.sleep(5);
+            environnement.lock();
+            environnement.print("L'agent "+numero+" n'a pas suivi");
+            environnement.deplacerSansDeplacement(this, antiMeneur.getDernierDeplacement());
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

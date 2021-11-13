@@ -39,7 +39,7 @@ public class Environnement{
         this.verbose = verbose;
     }
 
-    public synchronized int deplacer(Agent a){
+    public int deplacer(Agent a){
         int deplacement = 0;
         for(Stack<Agent> oldStack: this.map){
             if(oldStack.size() > 0 && oldStack.peek() == a){
@@ -55,7 +55,7 @@ public class Environnement{
         return deplacement;
     }
 
-    public void deplacer(Agent a, int deplacement){
+    public int deplacer(Agent a, int deplacement){
         for(Stack<Agent> oldStack: this.map){
             if(oldStack.size() > 0 && oldStack.peek() == a){
                 Stack<Agent> newStack = this.map.get(this.map.indexOf(oldStack)+deplacement);
@@ -63,6 +63,30 @@ public class Environnement{
                 break;
             }
         }
+        return deplacement;
+    }
+
+    /**
+     *  L'agent se déplace mais pas du vecteur indiqué. Le déplacement final doit donc être une autre valeur.
+     * @param a
+     * @param deplacement
+     * @return
+     */
+    public int deplacerSansDeplacement(Agent a, int deplacement){
+        for(Stack<Agent> oldStack: this.map){
+            if(oldStack.size() > 0 && oldStack.peek() == a){
+                ArrayList<Stack<Agent>> possibleMoves = (ArrayList<Stack<Agent>>) this.map.clone();
+                possibleMoves.remove(oldStack);
+                Stack<Agent> stackEvite = this.map.get(this.map.indexOf(oldStack)+deplacement);
+                possibleMoves.remove(stackEvite);
+                int rand = ran.nextInt(this.map.size()-2);
+                Stack<Agent> newStack = possibleMoves.get(rand);
+                deplacement = map.indexOf(newStack) - map.indexOf(oldStack);
+                handleDeplacement(a, newStack, oldStack);
+                break;
+            }
+        }
+        return deplacement;
     }
 
     public void handleDeplacement(Agent a, Stack<Agent> newStack, Stack<Agent> oldStack){
@@ -91,11 +115,10 @@ public class Environnement{
     }
 
     public void terminerLeProgramme(){
-        System.out.println("Réussite : " + this.success +" | Nombre de déplacements : "+this.nbMoves);
+        print("Réussite : " + this.success +" | Nombre de déplacements : "+this.nbMoves);
         for (Agent a : agents){
             a.setFini(true);
         }
-        //Kill threads
     }
 
     public int start(){
@@ -124,6 +147,10 @@ public class Environnement{
             }
             System.out.println(line);
         }
+    }
+
+    public synchronized void print(String s){
+        if(verbose) System.out.println(s);
     }
 
     public void lock(){

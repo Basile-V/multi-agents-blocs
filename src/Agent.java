@@ -15,7 +15,7 @@ public class Agent extends Thread{
 
     @Override
     public void run(){
-        System.out.println("Agent "+ this.numero + "start running");
+        environnement.print("Agent "+ this.numero + "start running");
         while(!fini){
             try {
                 if(!objectifAtteint() || this.isPushed) {
@@ -51,10 +51,10 @@ public class Agent extends Thread{
     private void action(){
         environnement.lock();
         if (this.voisinDessus != null) {
-            System.out.println("L'agent " + this.numero + " pousse");
+            environnement.print("L'agent " + this.numero + " pousse");
             this.pousse();
         } else {
-            System.out.println("L'agent " + this.numero + " se déplace");
+            environnement.print("L'agent " + this.numero + " se déplace");
             this.seDeplacer();
         }
         environnement.unlock();
