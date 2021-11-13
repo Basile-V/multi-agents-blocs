@@ -1,11 +1,11 @@
 public class Agent extends Thread{
-    private String numero;
-    private Agent voisinDessus;
-    private Agent voisinDessous;
-    private Agent objectif;
-    private boolean isPushed;
-    private Environnement environnement;
-    private boolean fini = false;
+    protected String numero;
+    protected Agent voisinDessus;
+    protected Agent voisinDessous;
+    protected Agent objectif;
+    protected boolean isPushed;
+    protected Environnement environnement;
+    protected boolean fini = false;
 
     public Agent(String numero, Agent objectif, Environnement environnement) {
         this.numero = numero;
@@ -32,15 +32,11 @@ public class Agent extends Thread{
         this.environnement.deplacer(this);
     }
 
-    private Agent getVoisinDessus() {
-        return voisinDessus;
-    }
-
-    public void seFaisPousser(){
+    protected void seFaisPousser(){
         this.isPushed = true;
     }
 
-    public void pousse(){
+    protected void pousse(){
         this.voisinDessus.seFaisPousser();
     }
 
