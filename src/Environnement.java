@@ -29,14 +29,6 @@ public class Environnement{
         this.maxMoves = maxMoves;
     }
 
-    public boolean peutSeDeplacer(Agent a){
-        int i = 0;
-        while(i < this.map.size()){
-            if(this.map.get(i++).peek() == a)  return true;
-        }
-        return false;
-    }
-
     public synchronized void deplacer(Agent a){
         for(Stack<Agent> oldStack: this.map){
             if(oldStack.size() > 0 && oldStack.peek() == a){

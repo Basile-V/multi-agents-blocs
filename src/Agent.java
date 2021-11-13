@@ -36,24 +36,8 @@ public class Agent extends Thread{
         }
     }
 
-    public String getNumero() {
-        return numero;
-    }
-
     private Agent getVoisinDessus() {
         return voisinDessus;
-    }
-
-    private Agent getVoisinDessous() {
-        return voisinDessous;
-    }
-
-    private Agent getObjectif() {
-        return objectif;
-    }
-
-    public Environnement getEnvironnement() {
-        return environnement;
     }
 
     public void seFaisPousser(){
