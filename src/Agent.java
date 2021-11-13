@@ -1,5 +1,3 @@
-import java.util.Random;
-
 public class Agent extends Thread{
     private String numero;
     private Agent voisinDessus;
@@ -23,17 +21,15 @@ public class Agent extends Thread{
                 if(!objectifAtteint() || this.isPushed) {
                     action();
                 }
-                Thread.sleep(1000);
+                Thread.sleep(100);
             } catch (InterruptedException ex){
                 ex.printStackTrace();
             }
         }
     }
 
-    public void seDeplacer(){
-        if(this.getVoisinDessus() == null){
-            this.environnement.deplacer(this);
-        }
+    protected void seDeplacer(){
+        this.environnement.deplacer(this);
     }
 
     private Agent getVoisinDessus() {
@@ -56,16 +52,16 @@ public class Agent extends Thread{
         this.voisinDessous = voisinDessous;
     }
 
-    private synchronized void action(){
-        synchronized (environnement){
-            if (this.voisinDessus != null) {
-                    System.out.println("L'agent " + this.numero + " pousse");
-                    this.pousse();
-            } else {
-                System.out.println("L'agent " + this.numero + " se déplace");
-                this.seDeplacer();
-            }
+    private void action(){
+        environnement.lock();
+        if (this.voisinDessus != null) {
+            System.out.println("L'agent " + this.numero + " pousse");
+            this.pousse();
+        } else {
+            System.out.println("L'agent " + this.numero + " se déplace");
+            this.seDeplacer();
         }
+        environnement.unlock();
     }
 
     public boolean objectifAtteint(){
