@@ -11,7 +11,7 @@ Il possède une dernière variable **“fini”** qui lui permet de s’arrêter
 
 Voici les variables de nos agents:
 - ```private String numero;``` -> Identifiant
-- ```private Agent voisinDessus;``` -> Perception
+- ```private Agent voisinDessus;``` -> Perception et Action
 - ```private Agent voisinDessous;``` -> Perception
 - ```private Agent objectif;``` -> Objectif
 - ```private boolean isPushed;``` -> Perception
@@ -30,13 +30,13 @@ tel qu’un agent qui quitte sa pile puis se fait doubler sur l’emplacement o�
 
 ## 2ème Partie:
 
-Afin d’améliorer les performances de notre programme, on a décidé d’améliorer les performances de coordination et de communication entre les agents. 
+Afin d’améliorer les performances de notre programme, on a décidé d’améliorer les actions de nos agents par rapport à son voisin du dessus. 
 Pour cela on a créé une seconde classe agent “**AgentCoordonne**” qui hérite de la classe **Agent**. 
-Désormais si un agent perçoit que son voisin du dessus est son objectif, il va alors le pousser et le suivre afin de finir sur la case au-dessus de lui. 
-Dans le cas contraire si l’agent du dessus n’est pas son objectif il va le pousser et partir sur l’autre case. 
-Cette différence devrait permettre de limiter l’aléatoire et d’optimiser le nombre de coups nécessaires à la résolution du problème.
+Désormais si un agent perçoit que son voisin du dessus est son objectif, il va alors le pousser, puis le suivre en percevant son déplacement et l'imitant. De fait, il finira au-dessus de lui. 
+Dans le cas contraire, si l’agent du dessus n’est pas son objectif il va le pousser et effectuer un déplacement autre que celui qu'il a perçu. 
+Cette différence devrait permettre de limiter les déplacements aléatoires et d’optimiser le nombre de coups nécessaires à la résolution du problème.
 
-On a testé les deux phases sur un échantillon de 100 parties aléatoire et on peut observer que la phase 2 est bien plus optimisée.
+On a testé les deux phases sur un échantillon de 100 parties aléatoire et on a pu observer que la phase 2 est approximativement deux fois plus performantes.
 
 ![resultats](img/resultats.png)
 
@@ -45,4 +45,4 @@ On a testé les deux phases sur un échantillon de 100 parties aléatoire et on 
 
 ## Utilisation:
 
-Afin de faire fonctionner le code il suffit d'exécuter la fonction static main de la classe **Main**, cette fonction déclenchera tout d'abord la première phase, puis la seconde phase, et lancera finalement la phase 1 et la phase 2 100 fois afin de pouvoir comparer la différence entre les deux méthodes.
+Afin de faire fonctionner le code il suffit d'exécuter la fonction static main de la classe **Main**. Cette fonction déclenchera tout d'abord une première phase constitué des d'une exécution des deux parties en affichant les déplacements. Puis d'une seconde phase qui lancera la partie 1 et la partie 2 100 fois chacune, afin de pouvoir comparer la différence entre les deux méthodes.
